@@ -2,14 +2,11 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
+#include <stdexcept>
 
-Window::Window(int width, int height, int pixelChannels) : window(nullptr), width(width), height(height), pixelChannels(pixelChannels)
+Window::Window(WindowConfig config, SDLSystem& sdlSystem) : window(nullptr), config(config), sdlSystem(sdlSystem), windowSurface(nullptr), closed(false), pixelMapSurface(nullptr), lastUpdate(std::chrono::high_resolution_clock::now())
 {
-    if (SDL_Init( SDL_INIT_VIDEO ) < 0) {
-        throw std::runtime_error(std::string("SDL could not initialize! SDL_Error: ") + SDL_GetError());
-    }
-
-    window = SDL_CreateWindow("Diffusion Playground", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
+    window = SDL_CreateWindow("Diffusion Playground", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, config.width, config.height, SDL_WINDOW_SHOWN);
 
     if (window == nullptr) {
         throw std::runtime_error(std::string("Window could not be created! SDL_Error: ") + SDL_GetError());
@@ -20,45 +17,64 @@ Window::Window(int width, int height, int pixelChannels) : window(nullptr), widt
     if (windowSurface == nullptr) {
         throw std::runtime_error(std::string("Window surface could not be created! SDL_Error: ") + SDL_GetError());
     }
+
+    pixelMap.resize(config.width * config.height * config.channelsPerPixel);
+
+    pixelMapSurface = SDL_CreateRGBSurfaceFrom(pixelMap.data(), config.width, config.height, config.channelDepthPerPixel, config.pixelMapPitch, config.redMask, config.greenMask, config.blueMask, config.alphaMask);
+    
+    if (pixelMapSurface == nullptr) {
+        throw std::runtime_error(std::string("Data surface could not be created! SDL_Error: ") + SDL_GetError());
+    }
+
+    sdlSystem.registerEventCallback([this](SDL_Event& event) {
+        this->updateEventHandler(event);
+    }, SDL_GetWindowID(window));
 }
 
 Window::~Window() {
     close();
 }
 
-void Window::attachPixelData(unsigned char* pixelData, int pixelDataSize, int bitsPerChannel, int redMask, int greenMask, int blueMask, int alphaMask) {
+void Window::updatePixel(int x, int y, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
 
-    if (pixelData == nullptr) {
-        throw std::runtime_error("Pixel data is null!");
+    if (x < 0 || x >= config.width || y < 0 || y >= config.height) {
+        throw std::runtime_error(std::string("Pixel out of bounds! X: ") + std::to_string(x) + ", Y: " + std::to_string(y));
     }
 
-    if (pixelDataSize != width * height * pixelChannels) {
-        throw std::runtime_error("Pixel data size does not match window size!");
-    }
-
-    int pixelChannelDepth = pixelChannels * bitsPerChannel;
-    int pitch = pixelChannels * width;
-
-    dataSurface = SDL_CreateRGBSurfaceFrom(pixelData, width, height, pixelChannelDepth, pitch, redMask, greenMask, blueMask, alphaMask);
-
-    if (dataSurface == nullptr) {
-        throw std::runtime_error(std::string("Data surface could not be created! SDL_Error: ") + SDL_GetError());
-    }
+    int index = (y * config.width + x) * config.channelsPerPixel;
+    pixelMap[index + 0] = blue;
+    pixelMap[index + 1] = green;
+    pixelMap[index + 2] = red;
+    pixelMap[index + 3] = alpha;
 }
 
 
-void Window::updateEventHandler() {
-    SDL_Event event;
+void Window::updateEventHandler(SDL_Event& event) {
+    if (event.window.event == SDL_WINDOWEVENT_CLOSE) {
+        eventCallbacks.onClose();
+        close();
+    }
+}
 
-    while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_QUIT) {
-            close();
+void Window::clearDisplay(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
+    for(int y = 0; y < config.height; y++) {
+        for(int x = 0; x < config.width; x++) {
+            updatePixel(x, y, red, green, blue, alpha);
         }
     }
 }
 
 void Window::updateDisplay() {
-    SDL_BlitSurface(dataSurface, nullptr, windowSurface, nullptr);
+
+    // CHANGE create timer class
+    std::chrono::high_resolution_clock::time_point currentTime = std::chrono::high_resolution_clock::now();
+
+    if (currentTime - lastUpdate < std::chrono::duration<float>(1.0f / config.framesPerSecond)) {
+        return;
+    }
+
+    lastUpdate = currentTime;
+    SDL_BlitSurface(pixelMapSurface, nullptr, windowSurface, nullptr);
     SDL_UpdateWindowSurface(window);
 }
 
@@ -69,9 +85,15 @@ bool Window::hasClosed() {
 
 
 void Window::close() {
-    closed = true;
     
-    SDL_FreeSurface(dataSurface);
+    if (closed) {
+        return;
+    }
+
+    sdlSystem.unregisterEventCallback(SDL_GetWindowID(window));
+
+    SDL_FreeSurface(pixelMapSurface);
     SDL_DestroyWindow(window);
-    SDL_Quit();
+
+    closed = true;
 }

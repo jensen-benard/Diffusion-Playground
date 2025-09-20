@@ -3,11 +3,14 @@ project(DiffusionPlayground)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_BUILD_TYPE Debug)
 
 add_subdirectory(lib/particle)
 add_subdirectory(lib/window)
+add_subdirectory(lib/sdl_system)
 
 set(SOURCES
+    apps/monte_carlo.cpp
     apps/main.cpp
 )
 
@@ -15,14 +18,14 @@ find_package(SDL2 REQUIRED)
 
 add_executable(app ${SOURCES})
 
-target_include_directories(app PRIVATE src)
+target_include_directories(app PRIVATE include)
 
 target_link_libraries(
     app 
     PRIVATE 
-    SDL2::SDL2
     particle
-    window)
+    window
+    sdl_system)
 
 # option(ENABLE_TESTING "Enable tests" OFF)
 # if(ENABLE_TESTING)
