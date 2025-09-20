@@ -4,8 +4,11 @@ project(DiffusionPlayground)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+add_subdirectory(lib/particle)
+add_subdirectory(lib/window)
+
 set(SOURCES
-    src/main.cpp
+    apps/main.cpp
 )
 
 find_package(SDL2 REQUIRED)
@@ -17,7 +20,9 @@ target_include_directories(app PRIVATE src)
 target_link_libraries(
     app 
     PRIVATE 
-    SDL2::SDL2)
+    SDL2::SDL2
+    particle
+    window)
 
 # option(ENABLE_TESTING "Enable tests" OFF)
 # if(ENABLE_TESTING)
