@@ -1,6 +1,9 @@
 #include<SDL2/SDL.h>
 #include<iostream>
 #include<cstdlib>
+#include<fstream>
+#include<filesystem>
+#include<string>
 
 const int SCREEN_WIDTH = 1200;
 const int SCREEN_HEIGHT = 800;
@@ -25,14 +28,25 @@ const float MAX_ALPHA_COUNT = 100;
 
 const int stepSize = 5;
 
-int main(int argc, char* args[]) {
+const float FPS = 60.0f;
+const int TIME_STEPS = 1000;
+float* r2 = new float[TIME_STEPS];
 
+int currentTimeStep = 0; // first timestep
+int originX = static_cast<int>(SCREEN_WIDTH / 2);
+int originY = static_cast<int>(SCREEN_HEIGHT / 2);
+
+
+int main(int argc, char* args[]) {
 
     // init particles
     for (int i = 0; i < TOTAL_PARTICLES; i++) {
-        particles[i].update(static_cast<int>(SCREEN_WIDTH / 2), static_cast<int>(SCREEN_HEIGHT / 2));
+        particles[i].update(originX, originY);
     }
 
+    std::filesystem::create_directories("output");
+    std::ofstream csv("output/r2.csv");
+    csv << "timeStep,r2,deltaT\n"; // head row
 
     SDL_Window* window = nullptr;
 
@@ -41,7 +55,6 @@ int main(int argc, char* args[]) {
         std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << "\n";
         return 1;
     }
-            
 
     window = SDL_CreateWindow( "Gaussian", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN );
 
@@ -72,16 +85,15 @@ int main(int argc, char* args[]) {
                     alphaCount[y * SCREEN_WIDTH + x] = 0;
                 }
             }
-            while(!quit)
+            while(!quit && currentTimeStep < TIME_STEPS)
             { 
-            
-            
                 // Particles and pixels update
                 for (int i = 0; i < TOTAL_PARTICLES; i++) {
                     int dX = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * stepSize;
                     int dY = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * stepSize;
                     particles[i].update(particles[i].x + dX, particles[i].y + dY);
                     int index = (particles[i].y * SCREEN_WIDTH + particles[i].x) * CHANNELS;
+
                     if(alphaCount[index / CHANNELS] < MAX_ALPHA_COUNT) {
                         alphaCount[index / CHANNELS]+=1;
                     }
@@ -92,26 +104,36 @@ int main(int argc, char* args[]) {
                     data[index + 1] = static_cast<unsigned char>(255 * (1.0f - factor)); // G
                     data[index + 2] = 255; // R
                     data[index + 3] = 255; // A
+                    
+                    // Calculating r2
+                    r2[currentTimeStep] += (particles[i].x - originX) * (particles[i].x - originX) + (particles[i].y - originY) * (particles[i].y - originY);
                 }
 
+                r2[currentTimeStep] /= TOTAL_PARTICLES;
 
+                csv << currentTimeStep << "," << r2[currentTimeStep] << "," << 1.0f / FPS << "\n";
 
                 SDL_BlitSurface(dataSurface, NULL, screenSurface, NULL);
                 SDL_UpdateWindowSurface(window);
-
 
                 SDL_PollEvent(&e);
                 if(e.type == SDL_QUIT) { 
                     quit = true;
                 } 
 
-                SDL_Delay(16);
+                SDL_Delay(1/FPS * 1000);
+                currentTimeStep++;
+                std::cout << "Current time step: " << currentTimeStep << "\n";
+                
             }
     }
+
+    csv.close();
 
     delete[] particles;
     delete[] data;
     delete[] alphaCount;
+    delete[] r2;
 
     SDL_FreeSurface(dataSurface);
     SDL_DestroyWindow(window);
