@@ -19,7 +19,6 @@ data = data[1:]
 timeSteps = [int(row[0]) for row in data]
 print(timeSteps)
 r2Values = [float(row[1]) for row in data]
-deltaTs = [float(row[2]) for row in data]
 
 matplotlib.pyplot.plot(timeSteps, r2Values)
 matplotlib.pyplot.xlabel('Time Step')

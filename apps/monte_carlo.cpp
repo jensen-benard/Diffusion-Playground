@@ -1,8 +1,10 @@
 #include "monte_carlo.h"
 #include <random>
 #include <algorithm>
+#include <filesystem>
+#include <iostream>
 
-MonteCarlo::MonteCarlo(MonteCarloConfig config, SDLSystem& sdlSystem) : config(config), sdlSystem(sdlSystem), window(config.windowConfig, sdlSystem), timer(1.0f / config.simFramesPerSecond), stopped(false), alphaCount(256, 0)
+MonteCarlo::MonteCarlo(MonteCarloConfig config, SDLSystem& sdlSystem) : config(config), sdlSystem(sdlSystem), window(config.windowConfig, sdlSystem), timer(1.0f / config.simFramesPerSecond), stopped(false), alphaCount(256, 0), r2(TIME_STEPS, 0.0f)
 {   
     // init particles
     for(int i = 0; i < config.totalParticles; i++) {
@@ -21,6 +23,9 @@ MonteCarlo::MonteCarlo(MonteCarloConfig config, SDLSystem& sdlSystem) : config(c
 
     timer.start();
 
+    std::filesystem::create_directories("output");
+    csv = std::ofstream("output/r2.csv");
+    csv << "timeStep,r2\n"; // head row
 }
 
 void MonteCarlo::run() {
@@ -38,6 +43,7 @@ void MonteCarlo::run() {
 
             particles[i].updatePos(particles[i].getPosX() + dX, particles[i].getPosY() + dY);
             
+            
             int index = std::clamp((int)(particles[i].getPosY()), 0, config.windowConfig.height - 1) * config.windowConfig.width + std::clamp((int)particles[i].getPosX(), 0, config.windowConfig.width - 1);
             alphaCount[index]++;
 
@@ -45,12 +51,27 @@ void MonteCarlo::run() {
             if (factor > 255) {
                 factor = 255;
             }
+            
+            // Calculating r2
+            int particlePosX = static_cast<int>(particles[i].getPosX());
+            int particlePosY = static_cast<int>(particles[i].getPosY());
+            r2[currentTimeStep] += (particlePosX - config.originX) * (particlePosX - config.originX) + (particlePosY - config.originY) * (particlePosY - config.originY);
+
 
             char red = 255;
             char green = 0xff - factor;
             char blue = 0xff - factor;
 
             window.updatePixel(particles[i].getPosX(), particles[i].getPosY(), red, green, blue, 0xff);
+        }
+
+        r2[currentTimeStep] = r2[currentTimeStep] / config.totalParticles;
+        csv << currentTimeStep << "," << r2[currentTimeStep] << "\n";
+        currentTimeStep++;
+
+        if (currentTimeStep >= TIME_STEPS) {
+            std::cout << "Simulation stopped" << std::endl;
+            this->stop();
         }
     }
 
@@ -66,5 +87,6 @@ bool MonteCarlo::hasStopped() {
 }
 
 MonteCarlo::~MonteCarlo() {
+    csv.close();
     window.close();
 }

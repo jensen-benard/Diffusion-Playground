@@ -6,6 +6,7 @@
 #include "window.h"
 #include "sdl_system.h"
 #include "timer.h"
+#include <fstream>
 
 struct MonteCarloConfig {
     // Window parameters
@@ -61,6 +62,11 @@ class MonteCarlo {
         int MAX_ALPHA_COUNT = 100; // CHANGE implement into monte carlo config
 
         FixedTimer timer;
+        
+        int TIME_STEPS = 1000;
+        std::vector<float> r2;
+        int currentTimeStep = 0;
+        std::ofstream csv;
 };
 
 
