@@ -17,8 +17,9 @@ void FixedTimer::tick() {
 
 
 bool FixedTimer::isDue() {
-    if (accumulator >= timeStep) {
-        accumulator -= timeStep;
+    if (accumulator >= targetDeltaTime) {
+        accumulator -= targetDeltaTime;
+        if (accumulator < 0) { accumulator = 0; }
         return true;
     }
     return false;

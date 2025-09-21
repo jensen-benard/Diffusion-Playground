@@ -15,14 +15,14 @@ class Timer {
 
 class FixedTimer : public Timer {
     public:
-        FixedTimer(double timeStep) : timeStep(timeStep) {};
+        FixedTimer(double targetDeltaTime) : targetDeltaTime(targetDeltaTime), accumulator(0), lastUpdateTime(std::chrono::steady_clock::now()) {};
 
         void start() override;
         void tick() override;
         bool isDue() override;
 
     private:
-        double timeStep;
+        double targetDeltaTime;
         std::chrono::steady_clock::time_point lastUpdateTime;
 
         double accumulator;
@@ -32,7 +32,7 @@ class FixedTimer : public Timer {
 
 class VariableTimer : public Timer {
     public:
-        VariableTimer(double targetDeltaTime) : targetDeltaTime(targetDeltaTime) {};
+        VariableTimer(double targetDeltaTime) : targetDeltaTime(targetDeltaTime), lastUpdateTime(std::chrono::steady_clock::now()) {};
 
         void start() override;
         void tick() override {};
