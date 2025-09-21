@@ -10,10 +10,7 @@
 
 struct MonteCarloConfig {
     // Window parameters
-    int displayFramesPerSecond;
     WindowConfig windowConfig;
-
-    
 
     // Particle parameters
     int originX;
@@ -21,11 +18,10 @@ struct MonteCarloConfig {
     int totalParticles;
 
     // Simulation parameters 
-    int simFramesPerSecond;
-    int stepSize;
+    int simStepsPerSecond;
+    int particleStepSize;
     int maxSteps;
     bool recordMeanSquaredDisplacement;
-
 };
 
 

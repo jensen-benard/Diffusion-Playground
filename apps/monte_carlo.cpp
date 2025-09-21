@@ -4,7 +4,7 @@
 #include <filesystem>
 #include <iostream>
 
-MonteCarlo::MonteCarlo(MonteCarloConfig config, SDLSystem& sdlSystem) : config(config), sdlSystem(sdlSystem), window(config.windowConfig, sdlSystem), timer(1.0f / config.simFramesPerSecond), stopped(false), alphaCount(256, 0), r2(TIME_STEPS, 0.0f)
+MonteCarlo::MonteCarlo(MonteCarloConfig config, SDLSystem& sdlSystem) : config(config), sdlSystem(sdlSystem), window(config.windowConfig, sdlSystem), timer(1.0f / config.simStepsPerSecond), stopped(false), alphaCount(256, 0), r2(TIME_STEPS, 0.0f)
 {   
     // init particles
     for(int i = 0; i < config.totalParticles; i++) {
@@ -38,8 +38,8 @@ void MonteCarlo::run() {
     if (timer.isDue()) {
         
         for (int i = 0; i < config.totalParticles; i++) {
-            float dX = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * config.stepSize;
-            float dY = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * config.stepSize;
+            float dX = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * config.particleStepSize;
+            float dY = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * config.particleStepSize;
 
             particles[i].updatePos(particles[i].getPosX() + dX, particles[i].getPosY() + dY);
             

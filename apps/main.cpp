@@ -19,8 +19,8 @@ int main(int argc, char* args[]) {
         .originX = config.windowConfig.width / 2,
         .originY = config.windowConfig.height / 2,
         .totalParticles = 10000,
-        .simFramesPerSecond = 60,
-        .stepSize = 10,
+        .simStepsPerSecond = 60,
+        .particleStepSize = 10,
         .maxSteps = 100,
         .recordMeanSquaredDisplacement = false
     };
