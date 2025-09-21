@@ -4,7 +4,7 @@
 #include <SDL2/SDL.h>
 #include <vector>
 #include "sdl_system.h"
-#include <chrono>
+#include "timer.h"
 
 struct WindowConfig {
     int width;
@@ -58,7 +58,7 @@ class Window {
 
         bool closed;
 
-        std::chrono::high_resolution_clock::time_point lastUpdate;
+        VariableTimer timer;
 };
 
 #endif

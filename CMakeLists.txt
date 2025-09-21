@@ -8,12 +8,14 @@ set(CMAKE_BUILD_TYPE Debug)
 add_subdirectory(lib/particle)
 add_subdirectory(lib/window)
 add_subdirectory(lib/sdl_system)
+add_subdirectory(lib/timer)
 
 set(SOURCES
     apps/monte_carlo.cpp
     apps/main.cpp
 )
 
+#add_compile_options(-Wall -Wextra -Wpedantic)
 find_package(SDL2 REQUIRED)
 
 add_executable(app ${SOURCES})
@@ -25,7 +27,8 @@ target_link_libraries(
     PRIVATE 
     particle
     window
-    sdl_system)
+    sdl_system
+    timer)
 
 # option(ENABLE_TESTING "Enable tests" OFF)
 # if(ENABLE_TESTING)

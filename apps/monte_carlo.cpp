@@ -2,7 +2,7 @@
 #include <random>
 #include <algorithm>
 
-MonteCarlo::MonteCarlo(MonteCarloConfig config, SDLSystem& sdlSystem) : config(config), sdlSystem(sdlSystem), window(config.windowConfig, sdlSystem), stopped(false), lastSimUpdate(std::chrono::high_resolution_clock::now()), alphaCount(256, 0)
+MonteCarlo::MonteCarlo(MonteCarloConfig config, SDLSystem& sdlSystem) : config(config), sdlSystem(sdlSystem), window(config.windowConfig, sdlSystem), timer(1.0f / config.simFramesPerSecond), stopped(false), alphaCount(256, 0)
 {   
     // init particles
     for(int i = 0; i < config.totalParticles; i++) {
@@ -18,6 +18,9 @@ MonteCarlo::MonteCarlo(MonteCarloConfig config, SDLSystem& sdlSystem) : config(c
     window.setEventCallbacks(windowEventCallbacks);
 
     alphaCount = std::vector<int>(config.windowConfig.width * config.windowConfig.height, 0);
+
+    timer.start();
+
 }
 
 void MonteCarlo::run() {
@@ -26,9 +29,8 @@ void MonteCarlo::run() {
     }
 
     // CHANGE create timer class
-    std::chrono::high_resolution_clock::time_point currentTime = std::chrono::high_resolution_clock::now();
-    if (currentTime - lastSimUpdate >= std::chrono::duration<float>(1.0f / config.simFramesPerSecond)) {
-        lastSimUpdate = currentTime;
+    timer.tick();
+    if (timer.isDue()) {
         
         for (int i = 0; i < config.totalParticles; i++) {
             float dX = (static_cast<float>(rand()) / RAND_MAX * 2.0f - 1.0f) * config.stepSize;

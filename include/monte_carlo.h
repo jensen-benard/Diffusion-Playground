@@ -5,7 +5,7 @@
 #include "particle.h"
 #include "window.h"
 #include "sdl_system.h"
-#include <chrono>
+#include "timer.h"
 
 struct MonteCarloConfig {
     // Window parameters
@@ -45,7 +45,6 @@ class MonteCarlo {
         std::vector<unsigned char> pixelData;
 
         std::vector<Particle> particles;
-
     
         MonteCarloConfig config;
 
@@ -57,11 +56,11 @@ class MonteCarlo {
 
         bool stopped;
 
-        std::chrono::high_resolution_clock::time_point lastSimUpdate;
-
         std::vector<int> alphaCount;
 
         int MAX_ALPHA_COUNT = 100; // CHANGE implement into monte carlo config
+
+        FixedTimer timer;
 };
 
 

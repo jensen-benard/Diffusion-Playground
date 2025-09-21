@@ -4,7 +4,7 @@
 #include <string>
 #include <stdexcept>
 
-Window::Window(WindowConfig config, SDLSystem& sdlSystem) : window(nullptr), config(config), sdlSystem(sdlSystem), windowSurface(nullptr), closed(false), pixelMapSurface(nullptr), lastUpdate(std::chrono::high_resolution_clock::now())
+Window::Window(WindowConfig config, SDLSystem& sdlSystem) : window(nullptr), config(config), sdlSystem(sdlSystem), windowSurface(nullptr), closed(false), pixelMapSurface(nullptr), timer(1.0f / config.framesPerSecond)
 {
     window = SDL_CreateWindow("Diffusion Playground", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, config.width, config.height, SDL_WINDOW_SHOWN);
 
@@ -29,6 +29,8 @@ Window::Window(WindowConfig config, SDLSystem& sdlSystem) : window(nullptr), con
     sdlSystem.registerEventCallback([this](SDL_Event& event) {
         this->updateEventHandler(event);
     }, SDL_GetWindowID(window));
+
+    timer.start();
 }
 
 Window::~Window() {
@@ -66,16 +68,10 @@ void Window::clearDisplay(unsigned char red, unsigned char green, unsigned char 
 
 void Window::updateDisplay() {
 
-    // CHANGE create timer class
-    std::chrono::high_resolution_clock::time_point currentTime = std::chrono::high_resolution_clock::now();
-
-    if (currentTime - lastUpdate < std::chrono::duration<float>(1.0f / config.framesPerSecond)) {
-        return;
+    if (timer.isDue()) {
+        SDL_BlitSurface(pixelMapSurface, nullptr, windowSurface, nullptr);
+        SDL_UpdateWindowSurface(window);
     }
-
-    lastUpdate = currentTime;
-    SDL_BlitSurface(pixelMapSurface, nullptr, windowSurface, nullptr);
-    SDL_UpdateWindowSurface(window);
 }
 
 
