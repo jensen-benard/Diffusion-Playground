@@ -13,6 +13,7 @@ add_subdirectory(lib/timer)
 set(SOURCES
     apps/monte_carlo.cpp
     apps/main.cpp
+    apps/diffusion_explicit.cpp
 )
 
 #add_compile_options(-Wall -Wextra -Wpedantic)
