@@ -47,9 +47,7 @@ class MonteCarlo {
 
         SDLSystem& sdlSystem;
 
-        EventCallbacks windowEventCallbacks {
-            .onClose = [this]() {this->stop();}
-        };
+        EventCallbacks windowEventCallbacks;
 
         bool stopped;
 
