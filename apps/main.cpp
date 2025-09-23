@@ -37,7 +37,7 @@ int main(int argc, char* args[]) {
         .gridSpacing = 4.0f,
         .solverDeltaTime = 0.01f,
         .simFramesPerSecond = 60,
-        .maxSteps = 100000,
+        .maxSteps = 1000,
     };
 
 

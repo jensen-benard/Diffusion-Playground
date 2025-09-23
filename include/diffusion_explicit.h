@@ -4,6 +4,7 @@
 #include <vector>
 #include "window.h"
 #include "timer.h"
+#include <fstream>
 
 struct DiffusionExplicitConfig {
     // Window parameters
@@ -49,6 +50,10 @@ class DiffusionExplicit {
         int getIndex(int x, int y);
 
         int currentTimeStep;
+
+        std::vector<float> r2;
+
+        std::ofstream csv;
 };
 
 #endif
