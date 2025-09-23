@@ -37,7 +37,7 @@ Window::~Window() {
     close();
 }
 
-void Window::updatePixel(int x, int y, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
+void Window::setPixel(int x, int y, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
 
     if (x < 0 || x >= config.width || y < 0 || y >= config.height) {
         throw std::runtime_error(std::string("Pixel out of bounds! X: ") + std::to_string(x) + ", Y: " + std::to_string(y));
@@ -58,10 +58,10 @@ void Window::updateEventHandler(SDL_Event& event) {
     }
 }
 
-void Window::clearDisplay(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
+void Window::clearPixels(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha) {
     for(int y = 0; y < config.height; y++) {
         for(int x = 0; x < config.width; x++) {
-            updatePixel(x, y, red, green, blue, alpha);
+            setPixel(x, y, red, green, blue, alpha);
         }
     }
 }

@@ -3,7 +3,7 @@
 #include <filesystem>
 
 DiffusionExplicit::DiffusionExplicit(DiffusionExplicitConfig config, SDLSystem& sdlSystem) : config(config), sdlSystem(sdlSystem), window(config.windowConfig, sdlSystem), timer(1.0f / config.simFramesPerSecond), stopped(false), prevStepConcentrationGrid((config.windowConfig.width+2) * (config.windowConfig.height+2), 0.0f), currentTimeStep(0), r2(config.maxSteps, 0.0f) {
-    window.clearDisplay(0xff, 0xff, 0xff, 0xff);
+    window.clearPixels(0xff, 0xff, 0xff, 0xff);
 
     EventCallbacks windowEventCallbacks {
         .onClose = [this]() {this->stop();}
@@ -62,7 +62,7 @@ void DiffusionExplicit::run() {
 
     timer.tick();
     if (timer.isDue()) {
-        window.clearDisplay(0xff, 0xff, 0xff, 0xff);
+        window.clearPixels(0xff, 0xff, 0xff, 0xff);
 
         std::vector<float> currStepConcentrationGrid = prevStepConcentrationGrid;
 
@@ -81,7 +81,7 @@ void DiffusionExplicit::run() {
                 float value = currStepConcentrationGrid[getIndex(x, y)];
                 float mapped = pow(value/1000.0f, 0.03f); // square root stretches out low values
                 uint8_t color = static_cast<uint8_t>(255 * mapped);
-                window.updatePixel(x, y, 0x00, color, 0x00, 0xff);
+                window.setPixel(x, y, 0x00, color, 0x00, 0xff);
                 
                 // Calculate r2
                 float originX = (config.windowConfig.width+2) / 2.0f;

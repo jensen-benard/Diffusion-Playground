@@ -1,10 +1,12 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include "sdl_system.h"
 #include <SDL2/SDL.h>
 #include <vector>
-#include "sdl_system.h"
+#include <cstddef>
 #include "timer.h"
+#include <functional>
 
 struct WindowConfig {
     int width;
@@ -30,14 +32,17 @@ class Window {
         Window(WindowConfig config, SDLSystem& sdlSystem);
         ~Window();
 
-        void updatePixel(int x, int y, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
+        void setPixel(int x, int y, unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
 
-        void clearDisplay(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
+        void clearPixels(unsigned char red, unsigned char green, unsigned char blue, unsigned char alpha);
 
         void updateEventHandler(SDL_Event& event);
         void updateDisplay(); 
 
         void setEventCallbacks(EventCallbacks callbacks) { eventCallbacks = callbacks; }
+
+        int getWidth() { return config.width; }
+        int getHeight() { return config.height; }
 
         bool hasClosed();
 

@@ -1,6 +1,7 @@
 #include "monte_carlo.h"
 #include "diffusion_explicit.h"
 #include "sdl_system.h"
+#include "window.h"
 
 int main(int argc, char* args[]) {
 
@@ -20,39 +21,13 @@ int main(int argc, char* args[]) {
 
     windowConfig.pixelMapPitch = windowConfig.width * windowConfig.channelsPerPixel;
 
-    MonteCarloConfig config = {
-        .windowConfig = windowConfig,
-        .originX = config.windowConfig.width / 2,
-        .originY = config.windowConfig.height / 2,
-        .totalParticles = 10000,
-        .simStepsPerSecond = 60,
-        .particleStepSize = 10,
-        .maxSteps = 100,
-        .recordMeanSquaredDisplacement = false
-    };
-
-    DiffusionExplicitConfig diffusionExplicitConfig = {
-        .windowConfig = windowConfig,
-        .diffusionConstant = 100.0f,
-        .gridSpacing = 4.0f,
-        .solverDeltaTime = 0.01f,
-        .simFramesPerSecond = 60,
-        .maxSteps = 1000,
-    };
-
 
     
 
     SDLSystem& sdlSystem = SDLSystem::getInstance();
-
-    //MonteCarlo monteCarlo(config, sdlSystem);
-
-    DiffusionExplicit diffusionExplicit(diffusionExplicitConfig, sdlSystem);
     
     while(!sdlSystem.hasQuit()) {
         sdlSystem.pollEvents();
-        //monteCarlo.run();
-        diffusionExplicit.run();
     }
     return 0;
 }

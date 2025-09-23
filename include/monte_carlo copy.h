@@ -2,8 +2,9 @@
 #define MONTE_CARLO_H
 
 #include <vector>
-#include "discrete_random_walk_solver.h"
+#include "particle.h"
 #include "window.h"
+#include "sdl_system.h"
 #include "timer.h"
 #include <fstream>
 
