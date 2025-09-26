@@ -1,0 +1,3 @@
+add_library(simulation_manager STATIC src/simulation_manager.cpp)
+target_include_directories(simulation_manager PUBLIC include)
+target_link_libraries(simulation_manager PRIVATE solver timer)

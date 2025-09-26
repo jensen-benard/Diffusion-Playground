@@ -4,15 +4,16 @@
 #include <random>
 #include <vector>
 #include <cstddef>
+#include <memory>
 #include "solver.h"
-#include "walker.h"
-#include "scalar_grid.h"
 
 struct WalkerInitialCondition {
     double posX;
     double posY;
     unsigned int count;
 };
+
+class ScalarGrid;
 
 // CHANGE - change densityGRidwidth and hegith to resolution based instead. 
 struct DiscreteRandomWalkSolverConfig {
@@ -26,6 +27,8 @@ struct DiscreteRandomWalkSolverConfig {
     unsigned int randomNumberGeneratorSeed; 
 };
 
+class Walker;
+
 class DiscreteRandomWalkSolver : public Solver {
     public:
         DiscreteRandomWalkSolver(DiscreteRandomWalkSolverConfig config);
@@ -34,7 +37,8 @@ class DiscreteRandomWalkSolver : public Solver {
 
         void step() override;
         bool isMaxStepReached() const override { return maxStepReached; };
-        const Grid& getDensityGrid() override { return densityGrid; }
+        const Grid& getDensityGrid() override;
+        unsigned int getCurrentStep() const override { return currentStep; }
  
     private:
         double getRandomStep();
@@ -49,7 +53,7 @@ class DiscreteRandomWalkSolver : public Solver {
         std::mt19937 randomNumberGenerator;
         std::uniform_real_distribution<double> uniformDistribution;
 
-        ScalarGrid densityGrid;
+        std::unique_ptr<ScalarGrid> densityGrid;
 };
 
 #endif

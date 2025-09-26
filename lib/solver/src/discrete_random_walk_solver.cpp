@@ -1,5 +1,8 @@
 #include "discrete_random_walk_solver.h"
+#include "walker.h"
 #include <random>
+
+#include "scalar_grid.h"
 
 void DiscreteRandomWalkSolver::initWalkers()
 {
@@ -21,7 +24,7 @@ DiscreteRandomWalkSolver::DiscreteRandomWalkSolver(DiscreteRandomWalkSolverConfi
     config(config), 
     randomNumberGenerator(config.randomNumberGeneratorSeed),
     uniformDistribution(-config.walkerStepSize, config.walkerStepSize),
-    densityGrid(config.densityGridWidth, config.densityGridHeight)
+    densityGrid(std::make_unique<ScalarGrid>(config.densityGridWidth, config.densityGridHeight))
 {
     initWalkers();
 }
@@ -33,6 +36,9 @@ double DiscreteRandomWalkSolver::getRandomStep() {
     return uniformDistribution(randomNumberGenerator);
 }
 
+const Grid& DiscreteRandomWalkSolver::getDensityGrid() { 
+    return *densityGrid; 
+}
 
 void DiscreteRandomWalkSolver::step() 
 {
@@ -41,7 +47,7 @@ void DiscreteRandomWalkSolver::step()
         return;
     }
 
-    densityGrid.clear();
+    densityGrid->clear();
 
     for (auto& walker : walkers) {
         // Update the density Grid
@@ -52,7 +58,7 @@ void DiscreteRandomWalkSolver::step()
         int gridY = static_cast<int>(walker.getPosY() * scaleY);
 
         if (gridX >= 0 && gridX < config.densityGridWidth && gridY >= 0 && gridY < config.densityGridHeight) {
-            densityGrid.increment(gridX, gridY, 1.0);
+            densityGrid->increment(gridX, gridY, 1.0);
         }
         
         // Update solver

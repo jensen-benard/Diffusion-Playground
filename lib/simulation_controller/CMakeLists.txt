@@ -1,4 +1,0 @@
-add_library(simulation_controller STATIC src/simulation_controller.cpp)
-target_include_directories(simulation_controller PUBLIC include)
-
-target_link_libraries(simulation_controller PRIVATE sdl_system window solver grid timer)

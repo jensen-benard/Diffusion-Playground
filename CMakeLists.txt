@@ -10,7 +10,10 @@ add_subdirectory(lib/solver)
 add_subdirectory(lib/window)
 add_subdirectory(lib/timer)
 add_subdirectory(lib/grid)
-add_subdirectory(lib/simulation_controller)
+add_subdirectory(lib/engine)
+add_subdirectory(lib/grid_renderer)
+add_subdirectory(lib/simulation_manager)
+add_subdirectory(lib/camera)
 
 set(SOURCES
     apps/main.cpp
@@ -31,7 +34,10 @@ target_link_libraries(
     solver
     timer
     grid
-    simulation_controller)
+    engine
+    camera
+    grid_renderer
+    simulation_manager)
 
 # option(ENABLE_TES    sdl_systemTING "Enable tests" OFF)
 # if(ENABLE_TESTING)

@@ -1,0 +1,2 @@
+add_library(camera INTERFACE)
+target_include_directories(camera INTERFACE include)

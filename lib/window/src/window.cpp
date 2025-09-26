@@ -2,9 +2,13 @@
 #include <iostream>
 #include <stdexcept>
 #include <string>
-#include <stdexcept>
+#include "timer.h"
+#include "sdl_system.h"
 
-Window::Window(WindowConfig config, SDLSystem& sdlSystem) : window(nullptr), config(config), sdlSystem(sdlSystem), windowSurface(nullptr), closed(false), pixelMapSurface(nullptr), timer(1.0f / config.framesPerSecond)
+Window::Window(WindowConfig config, SDLSystem& sdlSystem) : 
+    window(nullptr), config(config), sdlSystem(sdlSystem), 
+    windowSurface(nullptr), closed(false), pixelMapSurface(nullptr), 
+    timer(std::make_unique<VariableTimer>(1.0f / config.framesPerSecond))
 {
     window = SDL_CreateWindow("Diffusion Playground", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, config.width, config.height, SDL_WINDOW_SHOWN);
 
@@ -30,7 +34,7 @@ Window::Window(WindowConfig config, SDLSystem& sdlSystem) : window(nullptr), con
         this->updateEventHandler(event);
     }, SDL_GetWindowID(window));
 
-    timer.start();
+    timer->start();
 }
 
 Window::~Window() {
@@ -68,7 +72,7 @@ void Window::clearPixels(unsigned char red, unsigned char green, unsigned char b
 
 void Window::updateDisplay() {
 
-    if (timer.isDue()) {
+    if (timer->isDue()) {
         SDL_BlitSurface(pixelMapSurface, nullptr, windowSurface, nullptr);
         SDL_UpdateWindowSurface(window);
     }

@@ -2,7 +2,8 @@
 #define SOLVER_H
 
 #include <vector>
-#include "grid.h"
+
+class Grid;
 
 
 class Solver {
@@ -10,6 +11,7 @@ class Solver {
         virtual void step() = 0;
         virtual bool isMaxStepReached() const = 0;
         virtual const Grid& getDensityGrid() = 0;
+        virtual unsigned int getCurrentStep() const = 0;
 };
 
 #endif

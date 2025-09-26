@@ -1,11 +1,10 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include "sdl_system.h"
 #include <SDL2/SDL.h>
 #include <vector>
-#include "timer.h"
 #include <functional>
+#include <memory>
 
 struct WindowConfig {
     int width;
@@ -25,6 +24,8 @@ struct EventCallbacks {
     std::function<void()> onClose;
 };
 
+class VariableTimer;
+class SDLSystem;
 
 class Window {
     public:
@@ -62,7 +63,7 @@ class Window {
 
         bool closed;
 
-        VariableTimer timer;
+        std::unique_ptr<VariableTimer> timer;
 };
 
 #endif
