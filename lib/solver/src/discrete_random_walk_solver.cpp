@@ -3,9 +3,17 @@
 
 void DiscreteRandomWalkSolver::initWalkers()
 {
-    walkers.reserve(config.totalWalkers);
-    for (int i = 0; i < config.totalWalkers; i++) {
-        walkers.emplace_back(config.walkerInitialConditions[i].posX, config.walkerInitialConditions[i].posY);
+    unsigned int totalWalkers = 0;
+    for (int i = 0; i < config.walkerInitialConditions.size(); i++) {
+        totalWalkers += config.walkerInitialConditions[i].count;
+    }
+
+    walkers.reserve(totalWalkers);
+
+    for (int i = 0; i < config.walkerInitialConditions.size(); i++) {
+        for (int j = 0; j < config.walkerInitialConditions[i].count; j++) {
+            walkers.emplace_back(config.walkerInitialConditions[i].posX, config.walkerInitialConditions[i].posY);
+        }
     }
 }
 

@@ -1,9 +1,15 @@
-#include "monte_carlo.h"
-#include "diffusion_explicit.h"
 #include "sdl_system.h"
 #include "window.h"
+#include "discrete_random_walk_solver.h"
+#include "solver.h"
+#include "simulation_controller.h"
+#include <cstddef>
+
 
 int main(int argc, char* args[]) {
+
+    SDLSystem& sdlSystem = SDLSystem::getInstance();
+
 
     WindowConfig windowConfig = {
         .width = 1200,
@@ -21,13 +27,36 @@ int main(int argc, char* args[]) {
 
     windowConfig.pixelMapPitch = windowConfig.width * windowConfig.channelsPerPixel;
 
+    Window window(windowConfig, sdlSystem);
 
-    
+    WalkerInitialCondition walkerInitialCondition = {
+        .posX = static_cast<double>(windowConfig.width / 2),
+        .posY = static_cast<double>(windowConfig.height / 2),
+        .count = 1000
+    };
 
-    SDLSystem& sdlSystem = SDLSystem::getInstance();
+    DiscreteRandomWalkSolverConfig monteCarloDiffusionConfig = {
+        .walkerInitialConditions = {walkerInitialCondition},
+        .walkerStepSize = 1.0f,
+        .maxSteps = 1000,
+        .solverWidth = static_cast<double>(windowConfig.width),
+        .solverHeight = static_cast<double>(windowConfig.height),
+        .densityGridWidth = static_cast<size_t>(windowConfig.width),
+        .densityGridHeight = static_cast<size_t>(windowConfig.height),
+        .randomNumberGeneratorSeed = 42
+    };
+
+    DiscreteRandomWalkSolver discreteRandomWalkSolver(monteCarloDiffusionConfig);
+
+    SimulationConfig simulationConfig = {
+        .stepsPerSecond = 60,
+    };
+
+    SimulationController simulationController(window, discreteRandomWalkSolver, simulationConfig);
     
     while(!sdlSystem.hasQuit()) {
         sdlSystem.pollEvents();
+        simulationController.run();
     }
     return 0;
 }

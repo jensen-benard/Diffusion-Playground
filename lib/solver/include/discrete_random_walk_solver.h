@@ -11,27 +11,22 @@
 struct WalkerInitialCondition {
     double posX;
     double posY;
-    double count;
+    unsigned int count;
 };
 
+// CHANGE - change densityGRidwidth and hegith to resolution based instead. 
 struct DiscreteRandomWalkSolverConfig {
     std::vector<WalkerInitialCondition> walkerInitialConditions;
     double walkerStepSize;
-    int totalWalkers;
     int maxSteps;
-
     double solverWidth;
     double solverHeight;
-
     std::size_t densityGridWidth;
     std::size_t densityGridHeight;
-
-
-
     unsigned int randomNumberGeneratorSeed; 
 };
 
-class DiscreteRandomWalkSolver : Solver {
+class DiscreteRandomWalkSolver : public Solver {
     public:
         DiscreteRandomWalkSolver(DiscreteRandomWalkSolverConfig config);
 

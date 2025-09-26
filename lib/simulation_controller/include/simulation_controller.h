@@ -6,19 +6,18 @@
 
 struct SimulationConfig {
     double stepsPerSecond;
-
-    double width;
-    double height;
 };
 
 class SimulationController {
     public:
-        SimulationController(Window& window, Solver& solver, SimulationConfig config) : window(window), solver(solver), config(config) {};
+        SimulationController(Window& window, Solver& solver, SimulationConfig config);
         ~SimulationController() {};
 
         void run();
         bool hasStopped() { return stopped; }
         void stop() { stopped = true; }
+
+        void onWindowClose() { stop(); }
         
     private:
         Window& window;
@@ -27,6 +26,8 @@ class SimulationController {
         SimulationConfig config;
 
         bool stopped = false;
+
+        EventCallbacks eventCallbacks;
 
 };
 

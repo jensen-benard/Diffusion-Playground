@@ -5,7 +5,7 @@
 using namespace std;
 
 static void checkBounds(size_t x, size_t y, size_t width, size_t height) {
-    if (x < width || y < height || x >= width || y >= height) {
+    if (x < 0 || y < 0 || x >= width || y >= height) {
         throw out_of_range("Grid index out of bounds");
     }
 }

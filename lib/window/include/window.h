@@ -4,7 +4,6 @@
 #include "sdl_system.h"
 #include <SDL2/SDL.h>
 #include <vector>
-#include <cstddef>
 #include "timer.h"
 #include <functional>
 

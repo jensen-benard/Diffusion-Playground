@@ -17,6 +17,7 @@ set(SOURCES
 )
 
 #add_compile_options(-Wall -Wextra -Wpedantic)
+find_package(SDL2 REQUIRED)
 
 add_executable(app ${SOURCES})
 
