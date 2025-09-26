@@ -7,11 +7,13 @@
 #include "simulation_manager.h"
 #include "grid.h"
 #include "camera.h"
+#include "recorder.h"
 
 
 
-Engine::Engine(SimulationManager& simulationManager, Window& window, GridRenderer& gridRenderer, CameraState& cameraState) : 
-    simulationManager(simulationManager), window(window), gridRenderer(gridRenderer), eventCallbacks(std::make_unique<EventCallbacks>()), cameraState(cameraState)
+Engine::Engine(SimulationManager& simulationManager, Window& window, GridRenderer& gridRenderer, Recorder& recorder, CameraState& cameraState) : 
+    simulationManager(simulationManager), window(window), gridRenderer(gridRenderer), eventCallbacks(std::make_unique<EventCallbacks>()), 
+    cameraState(cameraState), recorder(recorder)
 {
     eventCallbacks->onClose = [this](){this->onWindowClose();};
 
@@ -20,12 +22,13 @@ Engine::Engine(SimulationManager& simulationManager, Window& window, GridRendere
 
 
 void Engine::run() {
-    if (hasStopped()) return;
+    if (stopped) return;
 
     simulationManager.update();
 
-    // Map density grid to window
     SimulationState simulationState = simulationManager.getState();
+
+    
 
     window.clearPixels(0, 0, 0, 255);
 
@@ -34,6 +37,7 @@ void Engine::run() {
     window.updateDisplay(); 
 
     if (simulationManager.hasStopped()) {
+
         stop();
     }
 }

@@ -4,10 +4,12 @@
 #include "finite_difference_solver.h"
 #include "solver.h"
 #include "engine.h"
-#include <cstddef>
 #include "simulation_manager.h"
 #include "grid_renderer.h"
 #include "camera.h"
+#include "file.h"
+#include "recorder.h"
+#include <string>
 
 
 int main(int argc, char* args[]) {
@@ -56,9 +58,9 @@ int main(int argc, char* args[]) {
         .randomNumberGeneratorSeed = 1
     };
 
-    DiscreteRandomWalkSolver discreteRandomWalkSolver(monteCarloDiffusionConfig);
+    DiscreteRandomWalkSolver monteCarloDiffusionSolver(monteCarloDiffusionConfig);
 
-    FiniteDifferenceSolverConfig config = {
+    FiniteDifferenceSolverConfig explicitDiffusionConfig = {
         .diffusionConstant = 100.0,
         .gridSpacing = 4,
         .deltaTime = 0.01,
@@ -69,14 +71,14 @@ int main(int argc, char* args[]) {
         .densityGridHeight = static_cast<size_t>(windowConfig.height)
     };
 
-    FiniteDifferenceSolver finiteDifferenceSolver(config);
+    FiniteDifferenceSolver explicitDiffusionSolver(explicitDiffusionConfig);
 
     SimulationConfig simulationConfig = {
         .stepsPerSecond = 60,
     };
 
-    SimulationManager simulationManager1(finiteDifferenceSolver, simulationConfig);
-    SimulationManager simulationManager2(discreteRandomWalkSolver, simulationConfig);
+    SimulationManager simulationManager1(explicitDiffusionSolver, simulationConfig);
+    SimulationManager simulationManager2(monteCarloDiffusionSolver, simulationConfig);
 
     GridRenderer gridRenderer(SamplingMode::NEAREST);
 
@@ -88,9 +90,15 @@ int main(int argc, char* args[]) {
         .offsetY = 0.0
     };
 
+    std::string filename = "output.csv";
+    File file("output.csv");
+    file.clear();
 
-    Engine engine1(simulationManager1, window, gridRenderer, cameraState);
-    Engine engine2(simulationManager2, window, gridRenderer, cameraState);
+    file.writeLine("Step, ");
+    Recorder recorder(filename, explicitDiffusionConfig.maxSteps, 2);
+
+    Engine engine1(simulationManager1, window, gridRenderer, recorder, cameraState);
+    Engine engine2(simulationManager2, window, gridRenderer, recorder, cameraState);
     
     while(!sdlSystem.hasQuit()) {
         sdlSystem.pollEvents();

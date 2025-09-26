@@ -14,6 +14,8 @@ add_subdirectory(lib/engine)
 add_subdirectory(lib/grid_renderer)
 add_subdirectory(lib/simulation_manager)
 add_subdirectory(lib/camera)
+add_subdirectory(lib/file)
+add_subdirectory(lib/recorder)
 
 set(SOURCES
     apps/main.cpp
@@ -37,7 +39,9 @@ target_link_libraries(
     engine
     camera
     grid_renderer
-    simulation_manager)
+    simulation_manager
+    file
+    recorder)
 
 # option(ENABLE_TES    sdl_systemTING "Enable tests" OFF)
 # if(ENABLE_TESTING)

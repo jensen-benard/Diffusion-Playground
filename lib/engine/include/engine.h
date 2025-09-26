@@ -8,10 +8,11 @@ class GridRenderer;
 class SimulationManager;
 struct EventCallbacks;
 struct CameraState;
+class Recorder;
 
 class Engine {
     public:
-        Engine(SimulationManager& simulationManager, Window& window, GridRenderer& gridRenderer, CameraState& cameraConfig);
+        Engine(SimulationManager& simulationManager, Window& window, GridRenderer& gridRenderer, Recorder& recorder, CameraState& cameraConfig);
         ~Engine() {};
 
         void run();
@@ -27,6 +28,8 @@ class Engine {
         CameraState& cameraState;
 
         GridRenderer& gridRenderer;
+
+        Recorder& recorder;
 
         bool stopped = false;
 
