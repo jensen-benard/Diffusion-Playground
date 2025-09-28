@@ -11,3 +11,4 @@ The goal isn't necessarily to learn about diffusion, but to apply software desig
 
 # Todo
 [ ] - Implement recording of data for plotting.
+[ ] - Compile with pedantic and all warnings as errors, and fix them all.
