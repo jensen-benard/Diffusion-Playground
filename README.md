@@ -8,3 +8,6 @@ It includes:
 The apps/main.cpp is the front-end of the program.
 
 The goal isn't necessarily to learn about diffusion, but to apply software design principles towards simulations and to gain a better understanding of how to write numerical simulations.
+
+# Todo
+[ ] - Implement recording of data for plotting.
