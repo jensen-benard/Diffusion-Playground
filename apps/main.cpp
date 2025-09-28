@@ -33,7 +33,8 @@ int main(int argc, char* args[]) {
 
     windowConfig.pixelMapPitch = windowConfig.width * windowConfig.channelsPerPixel;
 
-    Window window(windowConfig, sdlSystem);
+    Window window1(windowConfig, sdlSystem);
+    Window window2(windowConfig, sdlSystem);
 
     WalkerInitialCondition walkerInitialCondition1 = {
         .posX = static_cast<double>(windowConfig.width / 2),
@@ -85,7 +86,7 @@ int main(int argc, char* args[]) {
     CameraState cameraState = {
         .centerX = static_cast<double>(windowConfig.width / 2),
         .centerY = static_cast<double>(windowConfig.height / 2),
-        .zoom = 10.0,
+        .zoom = 1.0,
         .offsetX = 0.0,
         .offsetY = 0.0
     };
@@ -97,13 +98,13 @@ int main(int argc, char* args[]) {
     file.writeLine("Step, ");
     Recorder recorder(filename, explicitDiffusionConfig.maxSteps, 2);
 
-    Engine engine1(simulationManager1, window, gridRenderer, recorder, cameraState);
-    Engine engine2(simulationManager2, window, gridRenderer, recorder, cameraState);
+    Engine engine1(simulationManager1, window1, gridRenderer, recorder, cameraState);
+    Engine engine2(simulationManager2, window2, gridRenderer, recorder, cameraState);
     
     while(!sdlSystem.hasQuit()) {
         sdlSystem.pollEvents();
         engine1.run();
-        //engine2.run();
+        engine2.run();
     }
     return 0;
 }
