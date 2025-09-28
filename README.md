@@ -1,6 +1,6 @@
 # Overview
 
-This repository is an archive for numerical simulations of 2D diffusion. \\
+This repository is an archive for numerical simulations of 2D diffusion. \
 It includes:
 - A monte carlo simulation using random walkers.
 - A finite difference simulation.
