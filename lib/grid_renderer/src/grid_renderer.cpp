@@ -24,8 +24,13 @@ void GridRenderer::render(const Grid& grid, Window& window, const CameraState& c
 
 
             double density = grid.getValueAtPos(gridX, gridY) / 5;
-
-            unsigned char colourIntensity = static_cast<unsigned char>(std::min(1.0, density) * 255);
+            
+            unsigned char colourIntensity;
+            if (density > 0.001) {
+                colourIntensity = static_cast<unsigned char>(std::max(10.0, std::min(1.0, pow(density, 0.3)) * 255));
+            } else {
+                colourIntensity = 0;
+            }
 
             window.setPixel(pixelPosX, pixelPosY, colourIntensity, 0, 0, 255);
         }
